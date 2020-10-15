@@ -8,7 +8,7 @@ const turndownService = new Turndown()
 const output = process.env.OUTPUT
 const ua = process.env.USER_AGENT
 const cookie = process.env.GEEKBANG_COOKIE
-const columnId = process.env.GEEKBANG_COLUMN_ID
+const columnId = process.argv[2] || process.env.GEEKBANG_COLUMN_ID
 const origin = 'https://time.geekbang.org/'
 
 const API_ARTICLES = `serv/v1/column/articles`
@@ -40,10 +40,10 @@ const custom = got.extend({
   }
 })
 
-;(async () => {
+;(async function main() {
   // 1. Fetch articles api
   const articles = new Map()
-	try {
+  try {
     const { body } = await custom.post(API_ARTICLES, {
       json: API_ARTICLES_DATA(columnId),
       responseType: 'json'
@@ -51,22 +51,38 @@ const custom = got.extend({
     for (let article of body.data.list) {
       articles.set(article.id, article.article_title)
     }
-	} catch (error) {
+  } catch (error) {
     throw error
   }
 
-  // 2. Traverse aritcles and create file
+  // 2. Create `output` when directory does not exist
+  if (!fs.existsSync(output)) {
+    fs.mkdirSync(output)
+  }
+
+  // 3. Traverse aritcles and create file
   for (let [id, title] of articles) {
     custom.post(API_ARTICLE, {
       json: API_ARTICLE_DATA(id),
       responseType: 'json'
     }).then(response => {
+      const article = response.body.data
+      const preappend = [`<h1>${title}</h1>`, `<img src="${article.article_cover}" />`].join('\n')
       // HTML to markdown
-      const markdown = turndownService.turndown(`<h1></h1>\r\n${response.body.data.article_content}`)
-      fs.writeFileSync(path.join(output, `${title}.md`), markdown)
+      const markdown = turndownService.turndown(`${preappend}${article.article_content}`)
+      fs.writeFileSync(path.join(output, `${title}.md`.replace('/', '&')), markdown)
     }).catch(error => {
-      console.log(error)
+      console.warn(error)
     })
-    return
+    // Wait 2 ~ 5 seconds to prevent IP blocked
+    await sleep(random(2, 5) * 1000)
   }
 })()
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function random(min, max) {
+  return min + Math.floor(Math.random() * (max - min + 1))
+}
