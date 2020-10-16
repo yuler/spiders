@@ -75,7 +75,7 @@ const custom = got.extend({
       console.warn(error)
     })
     // Wait 2 ~ 5 seconds to prevent IP blocked
-    await sleep(random(2, 5) * 1000)
+    await sleep(random(2000, 5000))
   }
 })()
 
