@@ -61,6 +61,7 @@ const custom = got.extend({
   }
 
   // 3. Traverse aritcles and create file
+  let i  = 0
   for (let [id, title] of articles) {
     custom.post(API_ARTICLE, {
       json: API_ARTICLE_DATA(id),
@@ -69,13 +70,15 @@ const custom = got.extend({
       const article = response.body.data
       const preappend = [`<h1>${title}</h1>`, `<img src="${article.article_cover}" />`].join('\n')
       // HTML to markdown
+      // @TODO if `article_content` doesn't exist throw error
       const markdown = turndownService.turndown(`${preappend}${article.article_content}`)
-      fs.writeFileSync(path.join(output, `${title}.md`.replace('/', '&')), markdown)
+      fs.writeFileSync(path.join(output, `${i.toString().padStart(3, 0)} ${title}.md`.replace(/\//g, '&')), markdown)
     }).catch(error => {
       console.warn(error)
     })
     // Wait 2 ~ 5 seconds to prevent IP blocked
     await sleep(random(2000, 5000))
+    i++
   }
 })()
 
