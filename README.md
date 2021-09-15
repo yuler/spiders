@@ -1,13 +1,12 @@
-# Some Spiders
+# Spiders
 
-记录一些自己写的爬虫脚本
+> 记录一些自己写的爬虫脚本
 
-## TechStacks
+## Scripts
 
-- Nodejs
+- [geekbang](./scripts/geekbang.ts) 极客时间专栏
 
-## 极客时间专栏
-
+<!--
 复制 `.env.example` 文件到 `.env`
 
 ```bash
@@ -21,4 +20,4 @@ yarn
 node geekbang [专栏 ID]
 # or
 OUTPUT=~/Books/左耳听风 GEEKBANG_COLUMN_ID=48 node geekbang
-```
+``` -->
