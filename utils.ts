@@ -1,4 +1,4 @@
-import { DenoDOM, TurndownService } from '../deps.ts';
+import { DenoDOM, TurndownService } from './deps.ts';
 
 export function html2md(html: string): string {
 	// refs: https://github.com/mixmark-io/turndown/issues/390
@@ -13,6 +13,6 @@ export function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function randomRange(min: number, max: number) {
+export function random(min: number, max: number) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 }
