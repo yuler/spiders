@@ -164,7 +164,7 @@ async function crawlingArticle(id: string, title: string, dir: string) {
 			markdown,
 		);
 
-		console.log(`Write Introduce.md in ${dir}`);
+		console.log(`Write ${title}.md in ${dir}`);
 	} catch (error) {
 		console.error(`Crawling ${title} Fial ~> ${error}`);
 	}
